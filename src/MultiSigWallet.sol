@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 pragma solidity ^0.8.0;
-import "openzeppelin-contracts//utils/Counters.sol";
+import "@openzeppelin-contracts//utils/Counters.sol";
 
 contract MultiSigWallet {
     using Counters for Counters.Counter;
@@ -20,7 +20,6 @@ contract MultiSigWallet {
     struct Transaction {
         address to;
         uint256 value;
-        bytes data;
         bool isExecuted;
     }
     Transaction[] public transactions;
@@ -76,8 +75,7 @@ contract MultiSigWallet {
 
     function submit(
         address _to,
-        uint256 _value,
-        bytes calldata _data
+        uint256 _value
     ) external onlyOwner {
         totaltr.increment();
         uint256 id = totaltr.current();
@@ -85,7 +83,6 @@ contract MultiSigWallet {
 
         transaction.to = _to;
         transaction.value = _value;
-        transaction.data = _data;
         transaction.isExecuted = false;
 
         transactions.push(transaction);
@@ -118,7 +115,7 @@ contract MultiSigWallet {
 
         transaction.isExecuted = true;
 
-       (bool sent, ) = transaction.to.call{value: transaction.value}(transaction.data);
+       (bool sent, ) = transaction.to.call{value: transaction.value}("");
        require(sent, 'tx failed');
 
        emit Execute(_txId);
