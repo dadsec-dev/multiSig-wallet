@@ -15,8 +15,6 @@ contract MultiSigWallet {
     event Execute(uint256 indexed txId);
 
     address[] public owners;
-    mapping(address => bool) public isOwner;
-
     uint256 public required;
 
     struct Transaction {
@@ -25,14 +23,17 @@ contract MultiSigWallet {
         bytes data;
         bool isExecuted;
     }
+    Transaction[] public transactions;
 
     // uint256 public id;
     mapping(uint256 => Transaction) public tr;
-
-    Transaction[] public transactions;
-
+    mapping(address => bool) public isOwner;
     mapping(uint256 => mapping(address => bool)) public approved;
+    
 
+    
+
+    // @notice --- modifiers
     modifier onlyOwner() {
         require(isOwner[msg.sender], "unauthorized entity");
         _;
